@@ -1,0 +1,41 @@
+# Application properties for PostgreSQL
+spring:
+  jpa:
+    properties:
+      hibernate:
+        jdbc:
+          lob:
+            non_contextual_creation: true
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+  datasource:
+    url: jdbc:postgresql://localhost:5432/thedevlair
+    username: postgres
+    password: postgres
+    driver-class-name: org.postgresql.Driver
+
+logging:
+  config: classpath:logback.xml
+#  level:
+#    org:
+#      springframework:
+#        security=DEBUG:
+
+
+thedevlair:
+  app:
+    jwtSecret: TZ0fHVN8UdTHNUaaV29l8xVF0EaRRrpmRJw/+z0lwgasahXSjjHYU8M7sK0v8oDBxyl0I/XI4ICtPkPXeMiFig==
+    jwtExpirationMs: 3600000
+    jwtRefreshExpirationMs: 86400000
+  api:
+    v1:
+      oauth: ''
+
+# Swagger properties
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+  api-docs:
+    path: /api-docs
+
+server:
+  port: 9082

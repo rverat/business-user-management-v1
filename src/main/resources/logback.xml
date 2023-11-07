@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true">
+    <include resource="org/springframework/boot/logging/logback/base.xml"/>
+
+    <appender name="console"
+              class="ch.qos.logback.core.ConsoleAppender">
+        <layout class="ch.qos.logback.classic.PatternLayout">
+            <Pattern>%d{yyyy-MM-dd'T'HH:mm:ssZ}|%p|%F:%L|%m%n</Pattern>
+        </layout>
+    </appender>
+
+    <logger name="org" level="INFO" additivity="false">
+        <appender-ref ref="console" />
+    </logger>
+
+    <logger name="org.springframework" level="INFO"/>
+
+    <root level="ERROR">
+        <appender-ref ref="console"/>
+    </root>
+
+</configuration>
