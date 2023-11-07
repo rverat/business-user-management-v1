@@ -4,8 +4,6 @@ import com.thedevlair.user.model.business.RefreshToken;
 import com.thedevlair.user.model.business.Rs.RefreshTokenRs;
 import org.springframework.http.ResponseEntity;
 
-import java.util.Optional;
-
 public interface RefreshTokenService {
 
     RefreshToken findByToken(String token);

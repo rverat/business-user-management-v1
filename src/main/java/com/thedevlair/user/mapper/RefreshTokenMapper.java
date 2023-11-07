@@ -7,5 +7,6 @@ import org.mapstruct.Mapper;
 @Mapper(componentModel = "spring")
 public interface RefreshTokenMapper {
     RefreshToken refreshTokenDTOToRefreshToken(RefreshTokenDTO refreshTokenDTO);
+
     RefreshTokenDTO refreshTokenToRefreshTokenDTO(RefreshToken refreshToken);
 }

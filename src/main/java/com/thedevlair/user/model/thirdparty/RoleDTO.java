@@ -2,9 +2,6 @@ package com.thedevlair.user.model.thirdparty;
 
 import com.thedevlair.user.model.business.ERole;
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 @Entity
 @Table(name = "roles")

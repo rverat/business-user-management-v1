@@ -8,29 +8,31 @@ import jakarta.validation.constraints.Size;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.List;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 public class UserDetailsImpl implements org.springframework.security.core.userdetails.UserDetails {
 
     private static final long serialVersionUID = 1L;
-    private Long id;
+    private final Long id;
 
     @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Username can only contain alphanumeric characters and underscores")
-    private String username;
+    private final String username;
 
     @JsonIgnore
     @Size(min = 8, max = 120)
-    private String password;
+    private final String password;
 
     @Email
-    private String email;
+    private final String email;
 
-    private boolean isEnabled;
+    private final boolean isEnabled;
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String email, String password, boolean isEnabled,
+    public UserDetailsImpl(Long id, String username, String password, String email, boolean isEnabled,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;

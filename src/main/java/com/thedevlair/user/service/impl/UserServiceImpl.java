@@ -12,6 +12,7 @@ import com.thedevlair.user.model.business.Rq.LoginRequest;
 import com.thedevlair.user.model.business.Rq.UpdateUserPasswordRq;
 import com.thedevlair.user.model.business.Rs.JwtRs;
 import com.thedevlair.user.model.business.Rs.MessageRs;
+import com.thedevlair.user.model.business.Rs.UserRs;
 import com.thedevlair.user.model.business.User;
 import com.thedevlair.user.model.thirdparty.RoleDTO;
 import com.thedevlair.user.model.thirdparty.UserDTO;
@@ -29,6 +30,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -109,7 +111,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<User> getUser() {
+    public ResponseEntity<UserRs> getUser() {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -118,7 +120,7 @@ public class UserServiceImpl implements UserService {
                 throw new NoContentFoundException("Not found user.");
             }
 
-            return ResponseEntity.ok(userMapper.userDTOToUser(optionalUser.get()));
+            return ResponseEntity.ok(userMapper.userDTOToUserRs(optionalUser.get()));
 
         } catch (Exception e) {
             throw new InternalServerErrorException("Error processing request.");
@@ -126,14 +128,14 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<User> getUserById(Long id) {
+    public ResponseEntity<UserRs> getUserById(Long id) {
         try {
             Optional<UserDTO> optionalUser = userRepository.findById(id);
             if (optionalUser.isEmpty()) {
                 throw new NoContentFoundException("Not found user.");
             }
 
-            return ResponseEntity.ok(userMapper.userDTOToUser(optionalUser.get()));
+            return ResponseEntity.ok(userMapper.userDTOToUserRs(optionalUser.get()));
 
         } catch (Exception e) {
             throw new InternalServerErrorException("Error processing request.");
@@ -153,11 +155,12 @@ public class UserServiceImpl implements UserService {
 
         UserDTO userDTO = userMapper.userToUserDTO(user);
 
-        userDTO.setRoles(getUserRoles(user));
-        userDTO.setPassword(encoder.encode(user.getPassword()));
+        userDTO.setRoles(getUserRoles(userDTO));
+        userDTO.setCreatedAt(new Date());
+        userDTO.setPassword(encoder.encode(userDTO.getPassword()));
         userRepository.save(userDTO);
 
-        return ResponseEntity.ok(new MessageRs("User registered successfully!"));
+        return ResponseEntity.ok(new MessageRs("Registered user successfully!"));
 
     }
 
@@ -166,13 +169,13 @@ public class UserServiceImpl implements UserService {
 
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-       if(!userDetails.getUsername().equals(user.getUsername())){
-           if (userRepository.existsByUsername(user.getUsername())) {
-               throw new ConflictDataException("Error: Username is already taken!");
-           }
-       }
+        if (!userDetails.getUsername().equals(user.getUsername())) {
+            if (userRepository.existsByUsername(user.getUsername())) {
+                throw new ConflictDataException("Error: Username is already taken!");
+            }
+        }
 
-        if(!userDetails.getEmail().equals(user.getEmail())){
+        if (!userDetails.getEmail().equals(user.getEmail())) {
             if (userRepository.existsByEmail(user.getEmail())) {
                 throw new ConflictDataException("Error: Email is already in use!");
             }
@@ -180,27 +183,29 @@ public class UserServiceImpl implements UserService {
 
         UserDTO userDTO = userMapper.userToUserDTO(user);
 
-        userDTO.setRoles(getUserRoles(user));
+        userDTO.setRoles(getUserRoles(userDTO));
+        userDTO.setUpdatedAt(new Date());
         userDTO.setPassword(encoder.encode(userDTO.getPassword()));
         userRepository.save(userDTO);
 
-        return ResponseEntity.ok(new MessageRs("User registered successfully!"));
+        return ResponseEntity.ok(new MessageRs("Updated user details successfully!"));
 
     }
 
-    private Set<RoleDTO> getUserRoles(User user) {
-        return Optional.ofNullable(user.getRoles())
-                .map(roles -> roles.stream()
-                        .map(role -> switch (role.getName().toString()) {
-                            case "admin" -> roleRepository.findByName(ERole.ROLE_ADMIN)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            case "mod" -> roleRepository.findByName(ERole.ROLE_MODERATOR)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                            default -> roleRepository.findByName(ERole.ROLE_USER)
-                                    .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
-                        }).collect(Collectors.toSet()))
-                .orElse(Set.of(roleRepository.findByName(ERole.ROLE_USER)
-                        .orElseThrow(() -> new RuntimeException("Error: Role is not found."))));
+    private Set<RoleDTO> getUserRoles(UserDTO userDTO) {
+
+        Set<RoleDTO> roles = userDTO.getRoles();
+
+        if (roles.isEmpty()) {
+            // Add the default role ROLE_USER if the list is empty
+            return Set.of(roleRepository.findByName(ERole.ROLE_USER)
+                    .orElseThrow(() -> new RuntimeException("Error: Role is not found.")));
+        }
+        // Map the Set of Roles to a List of RoleDTOs
+        return roles.stream()
+                .map(role -> roleRepository.findByName(role.getName())
+                        .orElseThrow(() -> new RuntimeException("Error: Role is not found.")))
+                .collect(Collectors.toSet());
     }
 
     @Override
@@ -220,17 +225,19 @@ public class UserServiceImpl implements UserService {
 
         userRepository.save(user);
 
-        return ResponseEntity.ok(new MessageRs("User updated successfully!"));
+        return ResponseEntity.ok(new MessageRs("Updated user password successfully!"));
     }
 
     @Override
     public ResponseEntity<MessageRs> logout(String token) {
 
+        String jwtToken = token.substring("Bearer ".length());
+
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         Long userId = userDetails.getId();
 
         refreshTokenService.deleteByUserId(userId);
-        JwtUtils.invalidateToken(token);
+        JwtUtils.invalidateToken(jwtToken);
         return ResponseEntity.ok(new MessageRs("Log out successful!"));
     }
 
@@ -238,7 +245,7 @@ public class UserServiceImpl implements UserService {
     public ResponseEntity<MessageRs> delete(Long id) {
         try {
             userRepository.deleteById(id);
-        }catch (Exception ex){
+        } catch (Exception ex) {
             throw new InternalServerErrorException("Error processing request.");
         }
         return ResponseEntity.ok(new MessageRs("Log out successful!"));

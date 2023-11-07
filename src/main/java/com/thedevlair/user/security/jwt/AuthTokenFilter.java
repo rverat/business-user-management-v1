@@ -1,7 +1,6 @@
 package com.thedevlair.user.security.jwt;
 
 import com.thedevlair.user.security.service.UserDetailsServiceImpl;
-import com.thedevlair.user.service.UserService;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;

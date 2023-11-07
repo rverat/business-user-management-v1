@@ -6,12 +6,12 @@ import com.thedevlair.user.model.business.Rq.UpdateUserPasswordRq;
 import com.thedevlair.user.model.business.Rs.JwtRs;
 import com.thedevlair.user.model.business.Rs.MessageRs;
 import com.thedevlair.user.model.business.Rs.RefreshTokenRs;
+import com.thedevlair.user.model.business.Rs.UserRs;
 import com.thedevlair.user.model.business.User;
 import com.thedevlair.user.service.RefreshTokenService;
 import com.thedevlair.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
-import lombok.AllArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -42,7 +42,7 @@ public class UserController {
     @GetMapping("/getUser")
     @Operation(summary = "Get user info logged in")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<User> getUser() {
+    public ResponseEntity<UserRs> getUser() {
 
         return userService.getUser();
     }
@@ -50,7 +50,7 @@ public class UserController {
     @GetMapping("/getUserById/{userId}")
     @Operation(summary = "Get user info logged in by userId")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<User> getUserById(@PathVariable("userId") Long userId) {
+    public ResponseEntity<UserRs> getUserById(@PathVariable("userId") Long userId) {
 
         return userService.getUserById(userId);
 
@@ -92,7 +92,6 @@ public class UserController {
 
     @PostMapping("/refreshToken")
     @Operation(summary = "Create access token from refresh token")
-    @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
     public ResponseEntity<RefreshTokenRs> refreshToken(@Valid @RequestBody RefreshToken refreshToken) {
 
         return refreshTokenService.refreshToken(refreshToken);

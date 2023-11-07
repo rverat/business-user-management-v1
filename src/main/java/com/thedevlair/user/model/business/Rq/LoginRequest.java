@@ -3,7 +3,6 @@ package com.thedevlair.user.model.business.Rq;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
-import lombok.Getter;
 
 
 public class LoginRequest {

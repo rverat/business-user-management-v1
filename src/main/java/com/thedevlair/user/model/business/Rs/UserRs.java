@@ -1,5 +1,6 @@
-package com.thedevlair.user.model.business;
+package com.thedevlair.user.model.business.Rs;
 
+import com.thedevlair.user.model.business.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -8,15 +9,13 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 
-public class User {
+public class UserRs {
 
     private Long id;
 
     @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Username can only contain alphanumeric characters and underscores")
     private String username;
 
-    @Size(min = 8, max = 120)
-    private String password;
 
     @Size(max = 80)
     @Email
@@ -54,14 +53,6 @@ public class User {
         this.username = username;
     }
 
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
     public String getEmail() {
         return email;
     }
@@ -94,14 +85,6 @@ public class User {
         this.profilePicture = profilePicture;
     }
 
-    public boolean isEnabled() {
-        return isEnabled;
-    }
-
-    public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
-    }
-
     public Date getCreatedAt() {
         return createdAt;
     }
@@ -116,6 +99,14 @@ public class User {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
+    }
+
+    public boolean isEnabled() {
+        return isEnabled;
+    }
+
+    public void setEnabled(boolean enabled) {
+        isEnabled = enabled;
     }
 
     public Set<Role> getRoles() {

@@ -116,7 +116,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     }
 
-    private RefreshTokenDTO validateExpiration(RefreshTokenDTO refreshTokenDTO){
+    private RefreshTokenDTO validateExpiration(RefreshTokenDTO refreshTokenDTO) {
         if (refreshTokenDTO.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.delete(refreshTokenDTO);
             throw new RefreshTokenException(refreshTokenDTO.getToken(), "Refresh token was expired. Please make a new signin request");

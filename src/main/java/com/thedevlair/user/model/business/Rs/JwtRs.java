@@ -1,8 +1,5 @@
 package com.thedevlair.user.model.business.Rs;
 
-import lombok.Getter;
-import lombok.Setter;
-
 import java.util.List;
 
 public class JwtRs {

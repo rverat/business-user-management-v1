@@ -7,8 +7,6 @@ import io.jsonwebtoken.security.Keys;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Component;
 
@@ -21,7 +19,7 @@ import java.util.Set;
 public class JwtUtils {
     private static final Logger logger = LoggerFactory.getLogger(JwtUtils.class);
 
-    private static Set<String> invalidatedTokens = new HashSet<>();
+    private static final Set<String> invalidatedTokens = new HashSet<>();
 
     @Value("${thedevlair.app.jwtSecret}")
     private String jwtSecret;
