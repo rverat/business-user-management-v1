@@ -58,8 +58,10 @@ the script sql is in the project
 
 
 #For you use your database local you need configure this files pg_hba.conf and postgresql.conf
-![](/home/dev/java/business-users-management-v1/images/pg_hba.conf.png)
-![](/home/dev/java/business-users-management-v1/images/postgresql.conf.png)
+
+![pg_hba](https://github.com/rverat/business-user-management-v1/blob/main/images/pg_hba.conf.png?raw=true)
+
+![postgresql](https://github.com/rverat/business-user-management-v1/blob/main/images/postgresql.conf.png?raw=true)
 
 and restart your postgresql service!
    
