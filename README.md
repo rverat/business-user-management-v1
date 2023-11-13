@@ -59,8 +59,10 @@ the script sql is in the project
 
 #For you use your database local you need configure this files pg_hba.conf and postgresql.conf
 
+ This ip change
 ![pg_hba](https://github.com/rverat/business-user-management-v1/blob/main/images/pg_hba.conf.png?raw=true)
 
+ put the ip of your machine 
 ![postgresql](https://github.com/rverat/business-user-management-v1/blob/main/images/postgresql.conf.png?raw=true)
 
 and restart your postgresql service!
