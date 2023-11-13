@@ -43,7 +43,7 @@ public class UserDTO {
     private String profilePicture;
 
     @Column(name = "is_active")
-    private boolean isEnabled;
+    private boolean enabled;
 
     @Column(name = "created_at")
     private Date createdAt;
@@ -114,11 +114,11 @@ public class UserDTO {
     }
 
     public boolean isEnabled() {
-        return isEnabled;
+        return enabled;
     }
 
     public void setEnabled(boolean enabled) {
-        isEnabled = enabled;
+        this.enabled = enabled;
     }
 
     public Date getCreatedAt() {

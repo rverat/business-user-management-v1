@@ -8,7 +8,8 @@ spring:
             non_contextual_creation: true
         dialect: org.hibernate.dialect.PostgreSQLDialect
   datasource:
-    url: jdbc:postgresql://localhost:5432/thedevlair
+    #url: jdbc:postgresql://localhost:5432/thedevlair
+    url: jdbc:postgresql://192.168.0.102:5432/thedevlair  #when you create the image
     username: postgres
     password: postgres
     driver-class-name: org.postgresql.Driver
@@ -26,9 +27,6 @@ thedevlair:
     jwtSecret: TZ0fHVN8UdTHNUaaV29l8xVF0EaRRrpmRJw/+z0lwgasahXSjjHYU8M7sK0v8oDBxyl0I/XI4ICtPkPXeMiFig==
     jwtExpirationMs: 3600000
     jwtRefreshExpirationMs: 86400000
-  api:
-    v1:
-      oauth: ''
 
 # Swagger properties
 springdoc:

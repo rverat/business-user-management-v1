@@ -1,0 +1,20 @@
+version: '3.8'
+
+services:
+  db:
+    image: rverat/users-management-db-v1-0.0.1  #db image if you create image of your database
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: thedevlair
+
+  app:
+    image: rverat/business-users-management-v1-0.0.1 #spring boot api image
+    ports:
+      - 9082:9082
+    depends_on:
+      - db
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/thedevlair
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres

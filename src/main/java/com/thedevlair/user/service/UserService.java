@@ -22,7 +22,7 @@ public interface UserService {
 
     ResponseEntity<MessageRs> update(User user);
 
-    ResponseEntity<MessageRs> updatePassword(UpdateUserPasswordRq passwordRq);
+    ResponseEntity<MessageRs> updatePassword(String token, UpdateUserPasswordRq passwordRq);
 
     ResponseEntity<MessageRs> logout(String token);
 

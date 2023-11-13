@@ -84,9 +84,9 @@ public class UserController {
     @PatchMapping("/updatePassword")
     @Operation(summary = "Update user password")
     @PreAuthorize("hasRole('USER') or hasRole('MODERATOR') or hasRole('ADMIN')")
-    public ResponseEntity<MessageRs> updateUserPass(@Valid @RequestBody UpdateUserPasswordRq passwordRq) {
+    public ResponseEntity<MessageRs> updateUserPass(@RequestHeader(HttpHeaders.AUTHORIZATION) String authorizationHeader, @Valid @RequestBody UpdateUserPasswordRq passwordRq) {
 
-        return userService.updatePassword(passwordRq);
+        return userService.updatePassword(authorizationHeader, passwordRq);
 
     }
 

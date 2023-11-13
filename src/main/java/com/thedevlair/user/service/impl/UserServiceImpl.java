@@ -183,12 +183,19 @@ public class UserServiceImpl implements UserService {
 
         UserDTO userDTO = userMapper.userToUserDTO(user);
 
-        userDTO.setRoles(getUserRoles(userDTO));
-        userDTO.setUpdatedAt(new Date());
-        userDTO.setPassword(encoder.encode(userDTO.getPassword()));
-        userRepository.save(userDTO);
+        Optional<UserDTO> userFromDB = userRepository.findById(userDTO.getId());
 
-        return ResponseEntity.ok(new MessageRs("Updated user details successfully!"));
+        if(userFromDB.isPresent()){
+            userDTO.setRoles(getUserRoles(userDTO));
+            userDTO.setCreatedAt(userFromDB.get().getCreatedAt()); //The creation date should not change
+            userDTO.setPassword(userFromDB.get().getPassword()); //Password is kept
+            userDTO.setUpdatedAt(new Date());
+            userRepository.save(userDTO);
+
+            return ResponseEntity.ok(new MessageRs("Updated user details successfully!"));
+        }
+
+        throw new NoContentFoundException("Not found user.");
 
     }
 
@@ -209,9 +216,18 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<MessageRs> updatePassword(UpdateUserPasswordRq passwordRq) {
+    public ResponseEntity<MessageRs> updatePassword(String token, UpdateUserPasswordRq passwordRq) {
+
         // Retrieve the currently authenticated user's details
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
+
+        Authentication authentication = authenticationManager.authenticate(
+                new UsernamePasswordAuthenticationToken(userDetails.getUsername(), passwordRq.oldPassword()));
+
+        if (!authentication.isAuthenticated()){
+            throw new NoContentFoundException("Not found user.");
+        }
 
         // Check if the user exists
         Optional<UserDTO> optionalUser = userRepository.findById(userDetails.getId());
@@ -221,9 +237,12 @@ public class UserServiceImpl implements UserService {
 
         UserDTO user = optionalUser.get();
 
-        user.setPassword(encoder.encode(passwordRq.password()));
+        user.setPassword(encoder.encode(passwordRq.newPassword()));
+        user.setUpdatedAt(new Date());
 
         userRepository.save(user);
+
+        this.logout(token);
 
         return ResponseEntity.ok(new MessageRs("Updated user password successfully!"));
     }
@@ -248,6 +267,6 @@ public class UserServiceImpl implements UserService {
         } catch (Exception ex) {
             throw new InternalServerErrorException("Error processing request.");
         }
-        return ResponseEntity.ok(new MessageRs("Log out successful!"));
+        return ResponseEntity.ok(new MessageRs("Delete user successful!"));
     }
 }

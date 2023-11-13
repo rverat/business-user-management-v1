@@ -94,7 +94,7 @@ public class User {
         this.profilePicture = profilePicture;
     }
 
-    public boolean isEnabled() {
+    public boolean getEnabled() {
         return isEnabled;
     }
 

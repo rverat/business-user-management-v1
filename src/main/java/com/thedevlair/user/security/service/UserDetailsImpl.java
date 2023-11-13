@@ -28,17 +28,17 @@ public class UserDetailsImpl implements org.springframework.security.core.userde
     @Email
     private final String email;
 
-    private final boolean isEnabled;
+    private final boolean enabled;
 
     private final Collection<? extends GrantedAuthority> authorities;
 
-    public UserDetailsImpl(Long id, String username, String password, String email, boolean isEnabled,
+    public UserDetailsImpl(Long id, String username, String password, String email, boolean enabled,
                            Collection<? extends GrantedAuthority> authorities) {
         this.id = id;
         this.username = username;
         this.password = password;
         this.email = email;
-        this.isEnabled = isEnabled;
+        this.enabled = enabled;
         this.authorities = authorities;
     }
 
@@ -92,7 +92,7 @@ public class UserDetailsImpl implements org.springframework.security.core.userde
 
     @Override
     public boolean isEnabled() {
-        return isEnabled;
+        return enabled;
     }
 
     public String getEmail() {

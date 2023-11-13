@@ -5,7 +5,9 @@ import jakarta.validation.constraints.Size;
 
 public record UpdateUserPasswordRq(@NotBlank
                                    @Size(min = 8, max = 16)
-                                   String password) {
+                                   String oldPassword, @NotBlank
+                                   @Size(min = 8, max = 16)
+                                   String newPassword) {
 
 }
 
