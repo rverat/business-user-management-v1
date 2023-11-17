@@ -9,9 +9,9 @@ import java.time.Instant;
 @Entity(name = "refreshtoken")
 public class RefreshTokenDTO {
     @Id
-    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "refresh_token_seq")
-    @SequenceGenerator(name = "refresh_token_seq", sequenceName = "refreshtoken_SEQ", allocationSize = 1)
-    private long id;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private Integer id;
 
     @OneToOne
     @JoinColumn(name = "user_id", referencedColumnName = "id")
@@ -23,11 +23,11 @@ public class RefreshTokenDTO {
     @Column(nullable = false)
     private Instant expiryDate;
 
-    public long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

@@ -1,4 +1,4 @@
-# Alpine Linux with OpenJDK JRE
+# OpenJDK JRE
 FROM openjdk:21-jdk-slim
 
 WORKDIR /opt/app

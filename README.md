@@ -34,14 +34,14 @@ the script sql is in the project
     sudo docker buildx create --name business-users-management-builder
     sudo docker buildx create --use business-users-management-builder
 
-    //create image example business-users-management-v1
-    sudo docker buildx build --builder business-users-management-builder -t rverat/business-users-management-v1 .
+    //create image example business-users-management-v2
+    sudo docker buildx build --builder business-users-management-builder -t business-users-management-v2 .
 
     //load the build
-    sudo docker buildx build --load -t business-users-management-v1 .
+    sudo docker buildx build --load -t business-users-management-v2 .
 
     //run
-    sudo docker run -p 9082:9082 business-users-management-v1
+    sudo docker run -p 9082:9082 business-users-management-v2
 
     // see logs
     sudo docker logs <id_run_container>
@@ -53,8 +53,8 @@ the script sql is in the project
 
     //push your image to docker hub add username of docker hub rverat and tag 0.0.1
     sudo docker login
-    sudo docker tag business-users-management-v1 rverat/business-users-management-v1:0.0.1
-    sudo docker push rverat/business-users-management-v1:0.0.1
+    sudo docker tag business-users-management-v2 rverat/business-users-management-v2:0.0.1
+    sudo docker push rverat/business-users-management-v2:0.0.1
 
 
 #For you use your database local you need configure this files pg_hba.conf and postgresql.conf

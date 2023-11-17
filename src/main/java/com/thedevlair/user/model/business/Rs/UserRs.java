@@ -11,7 +11,7 @@ import java.util.Set;
 
 public class UserRs {
 
-    private Long id;
+    private Integer id;
 
     @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Username can only contain alphanumeric characters and underscores")
     private String username;
@@ -37,11 +37,11 @@ public class UserRs {
     private boolean isEnabled;
     private Set<Role> roles = new HashSet<>();
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 
-    public void setId(Long id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 

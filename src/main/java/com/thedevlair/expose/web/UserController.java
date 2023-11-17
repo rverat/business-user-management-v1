@@ -64,7 +64,6 @@ public class UserController {
         return userService.sessionValidate(authorizationHeader);
     }
 
-
     @PostMapping("/signUp")
     @Operation(summary = "Create user")
     public ResponseEntity<MessageRs> registerUser(@Valid @RequestBody User user) {

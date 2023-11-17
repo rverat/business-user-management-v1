@@ -2,6 +2,7 @@ package com.thedevlair.user.service.impl;
 
 import com.thedevlair.user.dao.RoleRepository;
 import com.thedevlair.user.dao.UserRepository;
+import com.thedevlair.user.dao.UserRoleRepository;
 import com.thedevlair.user.exception.type.ConflictDataException;
 import com.thedevlair.user.exception.type.InternalServerErrorException;
 import com.thedevlair.user.exception.type.NoContentFoundException;
@@ -41,6 +42,8 @@ public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
+    private final UserRoleRepository userRoleRepository;
+
     private final UserMapper userMapper;
 
     private final AuthenticationManager authenticationManager;
@@ -53,11 +56,12 @@ public class UserServiceImpl implements UserService {
 
     private final RefreshTokenService refreshTokenService;
 
-    public UserServiceImpl(UserRepository userRepository, UserMapper userMapper,
-                           AuthenticationManager authenticationManager,
-                           RoleRepository roleRepository, PasswordEncoder encoder,
-                           JwtUtils jwtUtils, RefreshTokenService refreshTokenService) {
+    public UserServiceImpl(UserRepository userRepository, UserRoleRepository userRoleRepository,
+                           UserMapper userMapper, AuthenticationManager authenticationManager,
+                           RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils,
+                           RefreshTokenService refreshTokenService) {
         this.userRepository = userRepository;
+        this.userRoleRepository = userRoleRepository;
         this.userMapper = userMapper;
         this.authenticationManager = authenticationManager;
         this.roleRepository = roleRepository;
@@ -167,15 +171,21 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<MessageRs> update(User user) {
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        Optional<UserDTO> userFromDB = userRepository.findById(user.getId());
 
-        if (!userDetails.getUsername().equals(user.getUsername())) {
+        if (userFromDB.isEmpty()){
+            throw new NoContentFoundException("Not found user.");
+        }
+
+        UserDTO userDTOFromDB = userFromDB.get();
+
+        if (!userDTOFromDB.getUsername().equals(user.getUsername())) {
             if (userRepository.existsByUsername(user.getUsername())) {
                 throw new ConflictDataException("Error: Username is already taken!");
             }
         }
 
-        if (!userDetails.getEmail().equals(user.getEmail())) {
+        if (!userDTOFromDB.getEmail().equals(user.getEmail())) {
             if (userRepository.existsByEmail(user.getEmail())) {
                 throw new ConflictDataException("Error: Email is already in use!");
             }
@@ -183,19 +193,14 @@ public class UserServiceImpl implements UserService {
 
         UserDTO userDTO = userMapper.userToUserDTO(user);
 
-        Optional<UserDTO> userFromDB = userRepository.findById(userDTO.getId());
-
-        if(userFromDB.isPresent()){
             userDTO.setRoles(getUserRoles(userDTO));
-            userDTO.setCreatedAt(userFromDB.get().getCreatedAt()); //The creation date should not change
-            userDTO.setPassword(userFromDB.get().getPassword()); //Password is kept
+            userDTO.setCreatedAt(userDTOFromDB.getCreatedAt()); //The creation date should not change
+            userDTO.setPassword(userDTOFromDB.getPassword()); //Password is kept
             userDTO.setUpdatedAt(new Date());
             userRepository.save(userDTO);
 
             return ResponseEntity.ok(new MessageRs("Updated user details successfully!"));
-        }
 
-        throw new NoContentFoundException("Not found user.");
 
     }
 
@@ -263,6 +268,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public ResponseEntity<MessageRs> delete(Long id) {
         try {
+
+            userRoleRepository.deleteByUser_Id(id); //before delete user, we need delete roles assigned for this user
             userRepository.deleteById(id);
         } catch (Exception ex) {
             throw new InternalServerErrorException("Error processing request.");

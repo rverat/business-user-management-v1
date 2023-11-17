@@ -4,7 +4,7 @@ import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 
 public class Role {
-    private int id;
+    private Integer id;
 
     @Enumerated(EnumType.STRING)
     private ERole name;
