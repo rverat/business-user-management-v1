@@ -2,10 +2,10 @@ package com.thedevlair.user.dao;
 
 import com.thedevlair.user.model.thirdparty.UserRoleDTO;
 import com.thedevlair.user.model.thirdparty.UserRoleId;
-import jakarta.transaction.Transactional;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
+import org.springframework.transaction.annotation.Transactional;
 
-public interface UserRoleRepository extends JpaRepository<UserRoleDTO, UserRoleId> {
+public interface UserRoleRepository extends R2dbcRepository<UserRoleDTO, UserRoleId> {
 
     @Transactional
     void deleteByUser_Id(Long id);

@@ -2,10 +2,14 @@ package com.thedevlair.user.model.thirdparty;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.Objects;
 
+@Data
+@NoArgsConstructor
 @Embeddable
 public class UserRoleId implements Serializable {
 
@@ -17,25 +21,6 @@ public class UserRoleId implements Serializable {
 
     public UserRoleId(Integer userId, Integer roleId) {
         this.userId = userId;
-        this.roleId = roleId;
-    }
-
-    public UserRoleId() {
-    }
-
-    public Integer getUserId() {
-        return userId;
-    }
-
-    public void setUserId(Integer userId) {
-        this.userId = userId;
-    }
-
-    public Integer getRoleId() {
-        return roleId;
-    }
-
-    public void setRoleId(Integer roleId) {
         this.roleId = roleId;
     }
 

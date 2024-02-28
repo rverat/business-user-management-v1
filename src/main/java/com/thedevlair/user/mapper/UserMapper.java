@@ -1,6 +1,6 @@
 package com.thedevlair.user.mapper;
 
-import com.thedevlair.user.model.business.Rs.UserRs;
+import com.thedevlair.user.model.business.rs.UserRs;
 import com.thedevlair.user.model.business.User;
 import com.thedevlair.user.model.thirdparty.UserDTO;
 import org.mapstruct.Mapper;

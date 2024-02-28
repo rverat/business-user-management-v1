@@ -1,12 +1,12 @@
 package com.thedevlair.expose.web;
 
 import com.thedevlair.user.model.business.RefreshToken;
-import com.thedevlair.user.model.business.Rq.LoginRequest;
-import com.thedevlair.user.model.business.Rq.UpdateUserPasswordRq;
-import com.thedevlair.user.model.business.Rs.JwtRs;
-import com.thedevlair.user.model.business.Rs.MessageRs;
-import com.thedevlair.user.model.business.Rs.RefreshTokenRs;
-import com.thedevlair.user.model.business.Rs.UserRs;
+import com.thedevlair.user.model.business.rq.LoginRequest;
+import com.thedevlair.user.model.business.rq.UpdateUserPasswordRq;
+import com.thedevlair.user.model.business.rs.JwtRs;
+import com.thedevlair.user.model.business.rs.MessageRs;
+import com.thedevlair.user.model.business.rs.RefreshTokenRs;
+import com.thedevlair.user.model.business.rs.UserRs;
 import com.thedevlair.user.model.business.User;
 import com.thedevlair.user.service.RefreshTokenService;
 import com.thedevlair.user.service.UserService;

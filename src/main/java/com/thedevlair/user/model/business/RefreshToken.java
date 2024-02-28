@@ -1,8 +1,11 @@
 package com.thedevlair.user.model.business;
 
 
+import lombok.Data;
+
 import java.time.Instant;
 
+@Data
 public class RefreshToken {
     private String token;
     private String refreshToken;
@@ -14,35 +17,4 @@ public class RefreshToken {
         this.refreshToken = refreshToken;
     }
 
-    public String getToken() {
-        return token;
-    }
-
-    public void setToken(String token) {
-        this.token = token;
-    }
-
-    public String getRefreshToken() {
-        return refreshToken;
-    }
-
-    public void setRefreshToken(String refreshToken) {
-        this.refreshToken = refreshToken;
-    }
-
-    public String getType() {
-        return type;
-    }
-
-    public void setType(String type) {
-        this.type = type;
-    }
-
-    public Instant getExpiryDate() {
-        return expiryDate;
-    }
-
-    public void setExpiryDate(Instant expiryDate) {
-        this.expiryDate = expiryDate;
-    }
 }

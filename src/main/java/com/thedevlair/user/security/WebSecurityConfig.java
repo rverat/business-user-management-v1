@@ -1,9 +1,9 @@
 package com.thedevlair.user.security;
 
-import com.thedevlair.user.security.jwt.AuthEntryPointJwt;
+/*import com.thedevlair.user.security.jwt.AuthEntryPointJwt;
 import com.thedevlair.user.security.jwt.AuthTokenFilter;
 import com.thedevlair.user.security.service.UserDetailsServiceImpl;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -16,17 +16,36 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;*/
 
 
+import com.thedevlair.user.security.jwt.AuthEntryPointJwt;
+import com.thedevlair.user.security.jwt.AuthTokenFilter;
+import com.thedevlair.user.security.service.UserDetailsServiceImpl;
+import lombok.AllArgsConstructor;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
+import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
+import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
+import org.springframework.security.config.annotation.web.reactive.EnableWebFluxSecurity;
+import org.springframework.security.config.web.server.ServerHttpSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.security.web.server.SecurityWebFilterChain;
+
+import static org.springframework.security.config.Customizer.withDefaults;
+
+@AllArgsConstructor
 @Configuration
-@EnableMethodSecurity
+@EnableWebFluxSecurity
 public class WebSecurityConfig {
-    @Autowired
-    UserDetailsServiceImpl userDetailsService;
 
-    @Autowired
-    private AuthEntryPointJwt unauthorizedHandler;
+    private final UserDetailsServiceImpl userDetailsService;
+
+    private final AuthEntryPointJwt unauthorizedHandler;
 
     @Bean
     public AuthTokenFilter authenticationJwtTokenFilter() {
@@ -54,8 +73,21 @@ public class WebSecurityConfig {
     }
 
     @Bean
-    public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
-        http.csrf(AbstractHttpConfigurer::disable)
+    public SecurityWebFilterChain filterChain(ServerHttpSecurity http) throws Exception {
+        http
+                .authorizeExchange((authorize) -> authorize
+                        .pathMatchers("/login").permitAll()
+                        .anyExchange().authenticated()
+                )
+                .httpBasic(withDefaults())
+                .formLogin((form) -> form
+                        .loginPage("/login")
+                );
+        // @formatter:on
+        return http.build();
+
+
+       /* http.csrf(AbstractHttpConfigurer::disable)
                 .exceptionHandling(exception -> exception.authenticationEntryPoint(unauthorizedHandler))
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth ->
@@ -71,6 +103,6 @@ public class WebSecurityConfig {
 
         http.addFilterBefore(authenticationJwtTokenFilter(), UsernamePasswordAuthenticationFilter.class);
 
-        return http.build();
+        return http.build();*/
     }
 }

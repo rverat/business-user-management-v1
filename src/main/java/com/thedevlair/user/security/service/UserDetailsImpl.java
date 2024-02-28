@@ -5,15 +5,20 @@ import com.thedevlair.user.model.thirdparty.UserDTO;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.AllArgsConstructor;
+import lombok.Data;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-public class UserDetailsImpl implements org.springframework.security.core.userdetails.UserDetails {
+@AllArgsConstructor
+@Data
+public class UserDetailsImpl implements UserDetails {
 
     private static final long serialVersionUID = 1L;
     private final Long id;
@@ -31,16 +36,6 @@ public class UserDetailsImpl implements org.springframework.security.core.userde
     private final boolean enabled;
 
     private final Collection<? extends GrantedAuthority> authorities;
-
-    public UserDetailsImpl(Long id, String username, String password, String email, boolean enabled,
-                           Collection<? extends GrantedAuthority> authorities) {
-        this.id = id;
-        this.username = username;
-        this.password = password;
-        this.email = email;
-        this.enabled = enabled;
-        this.authorities = authorities;
-    }
 
     public static UserDetailsImpl build(UserDTO userDTO) {
         List<GrantedAuthority> authorities = userDTO.getRoles().stream()
@@ -61,42 +56,19 @@ public class UserDetailsImpl implements org.springframework.security.core.userde
         return authorities;
     }
 
-    public Long getId() {
-        return id;
-    }
-
-    @Override
-    public String getPassword() {
-        return password;
-    }
-
-    @Override
-    public String getUsername() {
-        return username;
-    }
-
     @Override
     public boolean isAccountNonExpired() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isAccountNonLocked() {
-        return true;
+        return false;
     }
 
     @Override
     public boolean isCredentialsNonExpired() {
-        return true;
-    }
-
-    @Override
-    public boolean isEnabled() {
-        return enabled;
-    }
-
-    public String getEmail() {
-        return email;
+        return false;
     }
 
     @Override

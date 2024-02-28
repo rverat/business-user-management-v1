@@ -1,5 +1,6 @@
-package com.thedevlair.user.model.business;
+package com.thedevlair.user.model.business.rs;
 
+import com.thedevlair.user.model.business.Role;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
@@ -10,15 +11,12 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Data
-public class User {
+public class UserRs {
 
-    private Long id;
+    private Integer id;
 
     @Pattern(regexp = "^[a-zA-Z0-9_]+$", message = "Username can only contain alphanumeric characters and underscores")
     private String username;
-
-    @Size(min = 8, max = 120)
-    private String password;
 
     @Size(max = 80)
     @Email

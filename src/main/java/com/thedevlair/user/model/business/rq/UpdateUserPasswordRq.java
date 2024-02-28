@@ -1,4 +1,4 @@
-package com.thedevlair.user.model.business.Rq;
+package com.thedevlair.user.model.business.rq;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Size;

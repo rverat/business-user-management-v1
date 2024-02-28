@@ -2,7 +2,9 @@ package com.thedevlair.user.model.thirdparty;
 
 import com.thedevlair.user.model.business.ERole;
 import jakarta.persistence.*;
+import lombok.Data;
 
+@Data
 @Entity
 @Table(name = "roles")
 public class RoleDTO {
@@ -15,11 +17,4 @@ public class RoleDTO {
     @Column(length = 50)
     private ERole name;
 
-    public ERole getName() {
-        return name;
-    }
-
-    public void setName(ERole name) {
-        this.name = name;
-    }
 }

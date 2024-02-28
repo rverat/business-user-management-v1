@@ -1,16 +1,17 @@
 package com.thedevlair.user.dao;
 
 import com.thedevlair.user.model.thirdparty.UserDTO;
-import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.r2dbc.repository.R2dbcRepository;
 import org.springframework.stereotype.Repository;
+import reactor.core.publisher.Mono;
 
 import java.util.Optional;
 
 @Repository
-public interface UserRepository extends JpaRepository<UserDTO, Long> {
-    Optional<UserDTO> findByUsername(String username);
+public interface UserRepository extends R2dbcRepository<UserDTO, Long> {
+    Mono<Optional<UserDTO>> findByUsername(String username);
 
-    Boolean existsByUsername(String username);
+    Mono<Boolean> existsByUsername(String username);
 
-    Boolean existsByEmail(String email);
+    Mono<Boolean> existsByEmail(String email);
 }

@@ -8,50 +8,46 @@ import com.thedevlair.user.exception.type.InternalServerErrorException;
 import com.thedevlair.user.exception.type.NoContentFoundException;
 import com.thedevlair.user.mapper.RefreshTokenMapper;
 import com.thedevlair.user.model.business.RefreshToken;
-import com.thedevlair.user.model.business.Rs.RefreshTokenRs;
+import com.thedevlair.user.model.business.rs.RefreshTokenRs;
 import com.thedevlair.user.model.thirdparty.RefreshTokenDTO;
 import com.thedevlair.user.model.thirdparty.UserDTO;
 import com.thedevlair.user.security.jwt.JwtUtils;
 import com.thedevlair.user.service.RefreshTokenService;
+import lombok.AllArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 import java.util.Optional;
 import java.util.UUID;
 
+@AllArgsConstructor
 @Service
 public class RefreshTokenServiceImpl implements RefreshTokenService {
 
     @Value("${thedevlair.app.jwtRefreshExpirationMs}")
     private Long refreshTokenDurationMs;
 
-    final private RefreshTokenRepository refreshTokenRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
 
-    final private RefreshTokenMapper refreshTokenMapper;
+    private final RefreshTokenMapper refreshTokenMapper;
 
     private final UserRepository userRepository;
 
     private final JwtUtils jwtUtils;
 
 
-    public RefreshTokenServiceImpl(RefreshTokenRepository refreshTokenRepository, RefreshTokenMapper refreshTokenMapper,
-                                   UserRepository userRepository, JwtUtils jwtUtils) {
-        this.refreshTokenRepository = refreshTokenRepository;
-        this.refreshTokenMapper = refreshTokenMapper;
-        this.userRepository = userRepository;
-        this.jwtUtils = jwtUtils;
-    }
 
     @Override
-    public RefreshToken findByToken(String token) {
+    public Mono<RefreshToken> findByToken(String token) {
         return refreshTokenMapper.refreshTokenDTOToRefreshToken(refreshTokenRepository.findByToken(token));
     }
 
     @Override
-    public RefreshToken createRefreshToken(Long userId) {
+    public Mono<RefreshToken> createRefreshToken(Long userId) {
         RefreshTokenDTO refreshTokenDTO = new RefreshTokenDTO();
 
         Optional<UserDTO> userDTO = userRepository.findById(userId);
@@ -73,7 +69,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    public RefreshToken verifyExpiration(RefreshToken refreshToken) {
+    public Mono<RefreshToken> verifyExpiration(RefreshToken refreshToken) {
 
         if (refreshToken.getExpiryDate().compareTo(Instant.now()) < 0) {
             refreshTokenRepository.deleteByToken(refreshToken.getToken());
@@ -101,7 +97,7 @@ public class RefreshTokenServiceImpl implements RefreshTokenService {
     }
 
     @Override
-    public ResponseEntity<RefreshTokenRs> refreshToken(RefreshToken refreshToken) {
+    public Mono<ResponseEntity<RefreshTokenRs>> refreshToken(RefreshToken refreshToken) {
         String rfToken = refreshToken.getRefreshToken();
 
         return Optional.of(refreshTokenRepository.findByToken(rfToken))

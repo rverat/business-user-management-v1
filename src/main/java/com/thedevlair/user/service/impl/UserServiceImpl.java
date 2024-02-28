@@ -9,11 +9,11 @@ import com.thedevlair.user.exception.type.NoContentFoundException;
 import com.thedevlair.user.mapper.UserMapper;
 import com.thedevlair.user.model.business.ERole;
 import com.thedevlair.user.model.business.RefreshToken;
-import com.thedevlair.user.model.business.Rq.LoginRequest;
-import com.thedevlair.user.model.business.Rq.UpdateUserPasswordRq;
-import com.thedevlair.user.model.business.Rs.JwtRs;
-import com.thedevlair.user.model.business.Rs.MessageRs;
-import com.thedevlair.user.model.business.Rs.UserRs;
+import com.thedevlair.user.model.business.rq.LoginRequest;
+import com.thedevlair.user.model.business.rq.UpdateUserPasswordRq;
+import com.thedevlair.user.model.business.rs.JwtRs;
+import com.thedevlair.user.model.business.rs.MessageRs;
+import com.thedevlair.user.model.business.rs.UserRs;
 import com.thedevlair.user.model.business.User;
 import com.thedevlair.user.model.thirdparty.RoleDTO;
 import com.thedevlair.user.model.thirdparty.UserDTO;
@@ -21,15 +21,18 @@ import com.thedevlair.user.security.jwt.JwtUtils;
 import com.thedevlair.user.security.service.UserDetailsImpl;
 import com.thedevlair.user.service.RefreshTokenService;
 import com.thedevlair.user.service.UserService;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.ReactiveSecurityContextHolder;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import reactor.core.publisher.Mono;
 
 import java.util.Date;
 import java.util.List;
@@ -37,6 +40,7 @@ import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+@AllArgsConstructor
 @Service
 public class UserServiceImpl implements UserService {
 
@@ -56,27 +60,14 @@ public class UserServiceImpl implements UserService {
 
     private final RefreshTokenService refreshTokenService;
 
-    public UserServiceImpl(UserRepository userRepository, UserRoleRepository userRoleRepository,
-                           UserMapper userMapper, AuthenticationManager authenticationManager,
-                           RoleRepository roleRepository, PasswordEncoder encoder, JwtUtils jwtUtils,
-                           RefreshTokenService refreshTokenService) {
-        this.userRepository = userRepository;
-        this.userRoleRepository = userRoleRepository;
-        this.userMapper = userMapper;
-        this.authenticationManager = authenticationManager;
-        this.roleRepository = roleRepository;
-        this.encoder = encoder;
-        this.jwtUtils = jwtUtils;
-        this.refreshTokenService = refreshTokenService;
-    }
 
     @Override
-    public ResponseEntity<JwtRs> authenticate(LoginRequest loginRequest) {
+    public Mono<ResponseEntity<JwtRs>> authenticate(LoginRequest loginRequest) {
 
         Authentication authentication = authenticationManager.authenticate(
                 new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+        ReactiveSecurityContextHolder.getContext().then(authentication);
         String jwt = jwtUtils.generateJwtToken(authentication);
 
         UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
@@ -84,7 +75,11 @@ public class UserServiceImpl implements UserService {
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.toList());
 
-        RefreshToken refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        Mono<RefreshToken> refreshToken = refreshTokenService.createRefreshToken(userDetails.getId());
+        Mono<String> tokenValueMono = refreshToken.map(RefreshToken::getToken);
+
+
+        String rfToken = tokenValueMono.toString();
 
         return ResponseEntity.ok(new JwtRs(userDetails.getId(),
                 userDetails.getUsername(),
@@ -92,11 +87,11 @@ public class UserServiceImpl implements UserService {
                 roles,
                 jwt,
                 "Bearer",
-                refreshToken.getToken()));
+                rfToken));
     }
 
     @Override
-    public ResponseEntity<MessageRs> sessionValidate(String authorizationHeader) {
+    public Mono<ResponseEntity<MessageRs>> sessionValidate(String authorizationHeader) {
         try {
             // Extract the token from the Authorization header
             String token = authorizationHeader.substring("Bearer ".length());
@@ -115,7 +110,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserRs> getUser() {
+    public Mono<ResponseEntity<UserRs>> getUser() {
         try {
             UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
@@ -132,7 +127,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<UserRs> getUserById(Long id) {
+    public Mono<ResponseEntity<UserRs>> getUserById(Long id) {
         try {
             Optional<UserDTO> optionalUser = userRepository.findById(id);
             if (optionalUser.isEmpty()) {
@@ -147,7 +142,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<MessageRs> create(User user) {
+    public Mono<ResponseEntity<MessageRs>> create(User user) {
 
         if (userRepository.existsByUsername(user.getUsername())) {
             throw new ConflictDataException("Error: Username is already taken!");
@@ -169,7 +164,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<MessageRs> update(User user) {
+    public Mono<ResponseEntity<MessageRs>> update(User user) {
 
         Optional<UserDTO> userFromDB = userRepository.findById(user.getId());
 
@@ -221,7 +216,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<MessageRs> updatePassword(String token, UpdateUserPasswordRq passwordRq) {
+    public Mono<ResponseEntity<MessageRs>> updatePassword(String token, UpdateUserPasswordRq passwordRq) {
 
         // Retrieve the currently authenticated user's details
         UserDetailsImpl userDetails = (UserDetailsImpl) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
@@ -253,7 +248,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<MessageRs> logout(String token) {
+    public Mono<ResponseEntity<MessageRs>> logout(String token) {
 
         String jwtToken = token.substring("Bearer ".length());
 
@@ -266,7 +261,7 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public ResponseEntity<MessageRs> delete(Long id) {
+    public Mono<ResponseEntity<MessageRs>> delete(Long id) {
         try {
 
             userRoleRepository.deleteByUser_Id(id); //before delete user, we need delete roles assigned for this user

@@ -1,10 +1,12 @@
-package com.thedevlair.user.model.business.Rq;
+package com.thedevlair.user.model.business.rq;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import jakarta.validation.constraints.Size;
+import lombok.Getter;
 
 
+@Getter
 public class LoginRequest {
 
     @NotBlank
@@ -16,11 +18,4 @@ public class LoginRequest {
     @Size(min = 8, max = 16)
     private String password;
 
-    public String getUsername() {
-        return username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
 }

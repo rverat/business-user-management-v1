@@ -1,4 +1,4 @@
-package com.thedevlair.user.model.business.Rs;
+package com.thedevlair.user.model.business.rs;
 
 import lombok.Getter;
 import lombok.Setter;
